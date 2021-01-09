@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/27 22:22:25 by jinkim            #+#    #+#             */
-/*   Updated: 2020/12/27 23:30:35 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/08 04:28:56 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,35 +42,51 @@ void	unset_invalid(void)
 	ft_putstr_fd(": invalid parameter name\n", 1);
 }
 
-void	cmd_unset(void)
+int		unset_isalnum(char *str)
 {
-	int		rtn;
-	char	*value;
 	int		idx;
 
+	idx = 0;
+	while (str[idx] != 0)
+	{
+		if (ft_isalnum(str[idx]) == 0)
+			return (-1);
+		idx++;
+	}
+	return (1);
+}
+
+void	run_unset(void)
+{
+	int		idx;
+	int		rtn;
+	char	*value;
+
+	idx = 1;
+	while (g_global.cmd_argv[idx] != 0)
+	{
+		if ((rtn = unset_isalnum(g_global.cmd_argv[idx])) < 0)
+		{
+			unset_invalid();
+			break ;
+		}
+		else
+		{
+			value = find_env_value(g_lstenv, g_global.cmd_argv[idx]);
+			if (value != 0)
+			{
+				lst_delete(g_lstenv, g_global.cmd_argv[idx]);
+				lst_delete(g_lstexport, g_global.cmd_argv[idx]);
+			}
+		}
+		idx++;
+	}
+}
+
+void	cmd_unset(void)
+{
 	if (g_global.cmd_argv[1] == 0)
 		ft_putstr_fd("unset: not enough arguments\n", 1);
 	else
-	{
-		idx = 1;
-		while (g_global.cmd_argv[idx] != 0)
-		{
-			if ((rtn = str_isalnum(g_global.cmd_argv[idx])) < 0)
-			{
-				unset_invalid();
-				break ;
-			}
-			else
-			{
-				value = find_env_value(g_lstenv, g_global.cmd_argv[idx]);
-				if (value != 0)
-				{
-					lst_delete(g_lstenv, g_global.cmd_argv[idx]);
-					lst_delete(g_lstexport, g_global.cmd_argv[idx]);
-				}
-			}
-			idx++;
-		}
-
-	}
+		run_unset();
 }

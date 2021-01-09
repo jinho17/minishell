@@ -6,92 +6,62 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 09:28:57 by jinkim            #+#    #+#             */
-/*   Updated: 2020/12/30 03:33:29 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/08 04:59:33 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*front_strtrim(char *str)
-{
-	int		idx;
-	char	*rtn;
-
-	idx = 0;
-	while (str[idx])
-	{
-		if (str[idx] != ' ' && str[idx] != '\t')
-			break ;
-		idx++;
-	}
-	rtn = ft_substr(str, idx, ft_strlen(str));
-	return (rtn);
-}
-
-char	get_cmd(void)
+int		get_cmd(void)
 {
 	char	buf[2];
-	char	*tmp;
-	char	quote;
 
-	quote = 0;
 	read(1, buf, 1);
 	buf[1] = '\0';
-	tmp = ft_strdup(buf);
 	if (buf[0] == '\'' || buf[0] == '\"')
-		quote = buf[0];
-	while (buf[0] != '\n')
+		g_global.quote = buf[0];
+	else if (buf[0] == '\n')
+		return (-1);
+	read_cmd(buf, 0);
+	if (g_global.cmd[0] == '|')
+		ft_putstr_fd("./minishell: parse error near '|'\n", 1);
+	if (g_global.cmd[0] == '\n' || g_global.cmd[0] == '|'
+		|| g_global.cmd[0] == 0 || g_global.pipe == -1)
+		return (-1);
+	else if (g_global.semi_c == -1)
 	{
-		read(1, buf, 1);
-		if (buf[0] == '\n')
-			break ;
-		else if ((buf[0] == '\'' || buf[0] == '\"') && (quote == 0 || quote == 1))
-			quote = buf[0];
-		else if (quote != 0 && buf[0] == quote)
-			quote = 1;
-		g_global.cmd = ft_strjoin(tmp, buf);
-		free(tmp);
-		tmp = ft_strdup(g_global.cmd);
-		free(g_global.cmd);
+		ft_putstr_fd("./minishell: parse error near `;;'\n", 1);
+		return (-1);
 	}
-	g_global.cmd = front_strtrim(tmp);
-	if (ft_strncmp(g_global.cmd, "\n", 2) == 0)
-	{
-		free(g_global.cmd);
-		g_global.cmd = ft_strdup("");
-	}
-	free(tmp);
-	return (quote);
+	return (1);
 }
 
 void	shell_prompt(void)
 {
-	char	cwd[1024];
-
-	getcwd(cwd, sizeof(cwd));
+	getcwd(g_global.cwd, sizeof(g_global.cwd));
 	ft_putstr_fd(find_env_value(g_lstenv, "USER"), 1);
 	ft_putchar_fd('@', 1);
 	ft_putstr_fd("minishell:", 1);
-	ft_putstr_fd(cwd, 1);
+	ft_putstr_fd(g_global.cwd, 1);
 	ft_putstr_fd("$ ", 1);
 }
 
 int		main(int argc, char *argv[], char **envp)
 {
-	char	quote;
-
 	argc = 0;
 	argv = NULL;
 
 	init_lst(envp);
 	while (1)
 	{
+		g_global.quote = 0;
+		g_global.pipe_num = 0;
+		g_global.pipe = 0;
+		g_global.semi_c = 0;
 		shell_prompt();
-		quote = get_cmd();
-		if (quote != 0)
-			quote_cmd(quote);
-		else if (g_global.cmd[0])
-			many_cmd();
+		if (get_cmd() < 0)
+			continue ;
+		get_cmd_argv();
 	}
 
 	//while(g_lstenv != NULL)

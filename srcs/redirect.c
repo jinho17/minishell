@@ -6,75 +6,110 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 02:16:27 by jinkim            #+#    #+#             */
-/*   Updated: 2020/12/30 04:22:53 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/09 00:48:36 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	redir_input(int idx)
+void	remove_redir(int idx, char **cmds)
 {
-	int		fd;
-
-	if (g_global.cmd_argv[idx + 1])
+	if (cmds[idx + 2] == 0)
 	{
-		if ((fd = open(g_global.cmd_argv[idx + 1], O_RDONLY)) < 0)
+		while (cmds[idx])
+			cmds[idx++] = 0;
+	}
+	else
+	{
+		while (cmds[idx + 2])
+		{
+			cmds[idx] = cmds[idx + 2];
+			idx++;
+		}
+	}
+	cmds[idx] = 0;
+}
+
+void	redir_input(int idx, char **cmds)
+{
+	ft_close(g_global.fd_in);
+	if (cmds[idx + 1])
+	{
+		if ((g_global.fd_in = open(cmds[idx + 1], O_RDONLY)) < 0)
 		{
 			ft_putstr_fd("./minishell: No such file or directory: ", 1);
-			ft_putstr_fd(g_global.cmd_argv[idx + 1], 1);
+			ft_putstr_fd(cmds[idx + 1], 1);
 			ft_putchar_fd('\n', 1);
 			return ;
 		}
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-		while (g_global.cmd_argv[idx + 2])
-		{
-			g_global.cmd_argv[idx] = g_global.cmd_argv[idx + 2];
-			idx++;
-		}
-		g_global.cmd_argv[idx] = 0;
 	}
 }
 
-void	redir_output(int idx)
+void	redir_output(int idx, char **cmds, int double_redir)
 {
-	int		fd;
-
-	if (g_global.cmd_argv[idx + 1])
+	ft_close(g_global.fd_out);
+	if (cmds[idx + 1])
 	{
-		if ((fd = open(g_global.cmd_argv[idx + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
-			return ;
-		g_global.redir_out = 1;
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
-		while (g_global.cmd_argv[idx + 2])
+		if (double_redir == 0)
 		{
-			g_global.cmd_argv[idx] = g_global.cmd_argv[idx + 2];
-			idx++;
+			if ((g_global.fd_out = open(cmds[idx + 1],
+					O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
+				return ;
 		}
-		g_global.cmd_argv[idx] = 0;
+		else
+		{
+			if ((g_global.fd_out = open(cmds[idx + 1],
+					O_CREAT | O_WRONLY | O_APPEND, 0644)) < 0)
+				return ;
+		}
 	}
 }
 
-void	redirect(void)
+int		is_inout(int *idx, char **cmds)
 {
+	while (cmds[*idx])
+	{
+		if (ft_strncmp(cmds[*idx], "<", 2) == 0)
+			return (1);
+		else if (ft_strncmp(cmds[*idx], ">", 2) == 0)
+			return (2);
+		else if (ft_strncmp(cmds[*idx], ">>", 3) == 0)
+			return (3);
+		*idx += 1;
+	}
+	return (-1);
+}
+
+char	**redir_cmds_malloc(void)
+{
+	char	**cmds;
 	int		idx;
 	int		rtn;
+	int		redir_num;
 
-	idx = 0;
-	g_global.redir_out = 0;
-	while (g_global.cmd_argv[idx])
+	redir_num = 0;
+	rtn = is_inout(&redir_num, g_global.cmd_argv);
+	if (rtn != -1)
 	{
-		if ((rtn = ft_strncmp(g_global.cmd_argv[idx], "<", 2)) == 0)
+		cmds = cmd_malloc();
+		idx = 0;
+		while (g_global.cmd_argv[idx])
 		{
-			redir_input(idx);
-			break ;
+			cmds[idx] = ft_strdup(g_global.cmd_argv[idx]);
+			idx++;
 		}
-		else if ((rtn = ft_strncmp(g_global.cmd_argv[idx], ">", 2)) == 0)
+		cmds[idx] = 0;
+		free_str_2p(g_global.cmd_argv);
+		g_global.cmd_argv = cmd_malloc();
+		idx = 0;
+		while (idx < redir_num)
 		{
-			redir_output(idx);
-			break ;
+			g_global.cmd_argv[idx] = ft_strdup(cmds[idx]);
+			idx++;
 		}
-		idx++;
+		g_global.cmd_argv[idx] = 0;
 	}
+	else
+		return (0);
+	return(cmds);
 }

@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 22:11:03 by jinkim            #+#    #+#             */
-/*   Updated: 2020/12/27 00:22:26 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/08 04:23:23 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ int		str_equal(char *str)
 	int		cnt;
 
 	if (str[0] == '=')
+	{
+		g_global.export_err = -1;
 		return (-1);
+	}
 	idx = 0;
 	cnt = 0;
 	while (str[idx] != 0)
@@ -37,15 +40,25 @@ void	export_not_valid(char *str)
 	ft_putstr_fd("\n", 1);
 }
 
-int		str_isalnum(char *str)
+int		export_isalnum(char *str)
 {
 	int		idx;
 
 	idx = 0;
+	if (ft_isdigit(str[0]) == 1)
+	{
+		g_global.export_err = -1;
+		return (-1);
+	}
 	while (str[idx] != 0)
 	{
+		if ((ft_isalnum(str[idx]) == 0) && str[idx] == '=')
+			return (1);
 		if ((ft_isalnum(str[idx]) == 0) && (str[idx] != '='))
+		{
+			g_global.export_err = -1;
 			return (-1);
+		}
 		idx++;
 	}
 	return (1);
@@ -53,13 +66,13 @@ int		str_isalnum(char *str)
 
 void	cmd_export(void)
 {
-	int		rtn;
 	int		idx;
+	int		rtn;
 
 	idx = 1;
 	while (g_global.cmd_argv[idx] != 0)
 	{
-		if ((rtn = str_isalnum(g_global.cmd_argv[idx])) < 0)
+		if ((rtn = export_isalnum(g_global.cmd_argv[idx])) < 0)
 		{
 			export_not_valid(g_global.cmd_argv[idx]);
 			break ;
