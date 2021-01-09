@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/05 21:36:45 by jinkim            #+#    #+#             */
-/*   Updated: 2020/04/27 16:31:28 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/04 04:59:22 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,5 @@ void			ft_lstiter(t_list *lst, void (*f)(void *));
 t_list			*ft_lstmap(t_list *lst, void *(f)(void *), void (*del)(void *));
 
 char			*ft_dectohex(long long d, char x);
+void			ft_close(int fd);
 #endif

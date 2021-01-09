@@ -8,9 +8,12 @@ HEADER_DIR = -I./includes
 CFLAGS = -fsanitize=address -g -Wall -Wextra -Werror $(HEADER_DIR)
 
 SOURCE = minishell.c init_lst.c lstadd_sort.c cmd.c \
-		get_env.c cmd_export.c edit_lst.c cmd_echo.c \
-		lst_to_arr.c cmd_unset.c many_cmd.c quote_cmd.c \
-		quote_many_cmd.c redirect.c
+		get_env.c cmd_export.c edit_lst.c \
+		lst_to_arr.c cmd_unset.c cmd_bin.c \
+		redirect.c exec_cmd.c dollar_change.c\
+		read_cmd.c get_cmd_argv.c pipe.c \
+		pipe_version.c path_change.c
+
 SRCS = $(addprefix $(SRC_DIR), $(SOURCE))
 
 OBJ = $(SRCS:.c=.o)

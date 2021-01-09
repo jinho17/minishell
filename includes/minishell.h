@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/23 05:23:15 by jinkim            #+#    #+#             */
-/*   Updated: 2020/12/30 04:16:49 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/09 00:39:29 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <signal.h>
+#include <sys/stat.h>
 # include "../libft/libft.h"
 
 typedef struct	s_lst
@@ -34,52 +35,90 @@ typedef struct	s_global
 {
 	char		*cmd;
 	char		**cmd_argv;
-	int			redir_out;
 	pid_t		pid;
+	char		quote;
+	char		cwd[1024];
+	int			pipe_num;
+	int			pipe;
+	int			semi_c;
+	int			export_err;
+	int			fd_in;
+	int			fd_out;
 }				t_global;
 t_global		g_global;
 
 /*
 ** minishell main
 */
-char			*front_strtrim(char *str);
-char			get_cmd(void);
+int				get_cmd(void);
 void			shell_prompt(void);
+
+/*
+** read_cmd.c
+*/
+char			*front_strtrim(char *str);
+void			print_quote(void);
+void			check_condition(char *buf, int space_check);
+void			quote_pipe_cond(char *buf, int *space_check);
+void			read_cmd(char *buf, int space_check);
+
+/*
+** get_cmd_argv.c
+*/
+int				pipe_check(char *str);
+char			**cmd_malloc(void);
+void			remove_space(char **cmds);
+char			**split_cmd(int num1, int num2, char *str, char trim);
+void			get_cmd_argv();
+
+/*
+** pipe_version.c
+*/
+void			remove_empty_str(char **cmds, int idx);
+void			move_1char(int num1, int num2);
+void			remove_quote(void);
+void			no_pipe_version(char **cmds, int idx);
+void			pipe_version(char **cmds, int idx);
+
+/*
+**	pipe.c
+*/
+void			dup_close(int *fd, int inout);
+void			pipe_parent(int **fd, int idx, int pipe_num);
+void			pipe_child(int **fd, int idx, int pipe_num);
+void			run_pipe(int **fd, int idx, int pipe_num);
+void			exec_pipe(char **pipe_cmd);
 
 /*
 ** redirect
 */
-void	redirect(void);
+void			remove_redir(int idx, char **cmds);
+void			redir_input(int idx, char **cmds);
+void			redir_output(int idx, char **cmds, int double_redir);
+int				is_inout(int *idx, char **cmds);
+char			**redir_cmds_malloc(void);
 
 /*
-** quote_cmd
-*/
-void			print_quote(int quote);
-char			need_more_cmd(char quote, char *tmp, char *buf);
-void			quote_cmd(char quote);
-
-/*
-** quote_many_cmd
-*/
-void			quote_exec_cmd(int	*num1, int *num2, int semi_colon);
-void			quote_space(int *num1, int *num2);
-void			cmd_argv_malloc(void);
-void			quote_many_cmd(int	quote);
-
-/*
-** many_cmd
+** exec_cmd
 */
 void			free_str_2p(char **str);
+void			parent_ps(void);
 void			child_ps(void);
 void			exec_cmd(void);
-void			many_cmd(void);
 
 /*
 ** command
 */
-void			cmd_cd(void);
+void			pwd_print(void);
 void			cmd_exit(void);
+void			cmd_cd(void);
 void			cmd_env_export(t_lst *lst);
+
+/*
+** cmd_bin
+*/
+void			cmd_echo_bin(void);
+void			cmd_bin(void);
 
 /*
 ** get lstenv & lstexport
@@ -104,11 +143,19 @@ char			*get_env_name(char *str);
 char			*get_env_value(char *str);
 
 /*
+** dollar change
+*/
+char			*change_value(int idx, int num, int *len, char *value);
+int				get_len(int idx, int len);
+int				dollar_value(int idx, int num);
+void			dollar_change(void);
+
+/*
 ** cmd_export
 */
 int				str_equal(char *str);
 void			export_not_valid(char *str);
-int				str_isalnum(char *str);
+int				export_isalnum(char *str);
 void			cmd_export(void);
 
 /*
@@ -121,12 +168,6 @@ void			add_lstexport(char *name, char *value);
 void			edit_lst(char *str);
 
 /*
-** cmd_echo
-*/
-void			echo_env(int idx, int option);
-void			cmd_echo(void);
-
-/*
 ** lst_to_arr
 */
 void			copy_lst_cmd(char **env_arr);
@@ -137,6 +178,13 @@ char			**lst_to_arr(void);
 */
 void			lst_delete(t_lst *lst, char *name);
 void			unset_invalid(void);
+int				unset_isalnum(char *str);
+void			run_unset(void);
 void			cmd_unset(void);
+
+/*
+** change_path
+*/
+void			change_path(void);
 
 #endif

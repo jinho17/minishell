@@ -4,7 +4,7 @@ ft_strlcpy.c ft_strlen.c ft_strncmp.c ft_strnstr.c ft_strrchr.c ft_tolower.c ft_
 ft_strtrim.c ft_split.c ft_strmapi.c ft_itoa.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c \
 
 SRCS_BONUS = ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c ft_lstmap.c \
-			 ft_dectohex_bonus.c
+			 ft_dectohex_bonus.c ft_close_bonus.c
 
 OBJS = ${SRCS:%.c=%.o}
 
@@ -14,7 +14,7 @@ NAME = libft.a
 
 CC = gcc
 
-RM = rm -f 
+RM = rm -f
 
 CFLAGS = -Wall -Wextra -Werror -c
 
