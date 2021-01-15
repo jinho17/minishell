@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/23 05:23:15 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/09 00:39:29 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/15 10:18:56 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <signal.h>
-#include <sys/stat.h>
+# include <sys/stat.h>
+# include <errno.h>
 # include "../libft/libft.h"
 
 typedef struct	s_lst
@@ -35,15 +36,17 @@ typedef struct	s_global
 {
 	char		*cmd;
 	char		**cmd_argv;
-	pid_t		pid;
+	int			bef_quit;
 	char		quote;
 	char		cwd[1024];
 	int			pipe_num;
 	int			pipe;
 	int			semi_c;
 	int			export_err;
+	int			**fd;
 	int			fd_in;
 	int			fd_out;
+	int			redir;
 }				t_global;
 t_global		g_global;
 
@@ -68,8 +71,13 @@ void			read_cmd(char *buf, int space_check);
 int				pipe_check(char *str);
 char			**cmd_malloc(void);
 void			remove_space(char **cmds);
-char			**split_cmd(int num1, int num2, char *str, char trim);
 void			get_cmd_argv();
+
+/*
+** split_cmd
+*/
+void			new_str(char **cmds, int *num1, int *num2, int trim);
+char			**split_cmd(int num1, int num2, char *str, char trim);
 
 /*
 ** pipe_version.c
@@ -96,7 +104,14 @@ void			remove_redir(int idx, char **cmds);
 void			redir_input(int idx, char **cmds);
 void			redir_output(int idx, char **cmds, int double_redir);
 int				is_inout(int *idx, char **cmds);
-char			**redir_cmds_malloc(void);
+void			edit_cmd_argv(void);
+
+/*
+** redirect
+*/
+void			redir_fork(void);
+void			malloc_fd(void);
+void			redirect(void);
 
 /*
 ** exec_cmd
@@ -111,6 +126,7 @@ void			exec_cmd(void);
 */
 void			pwd_print(void);
 void			cmd_exit(void);
+void			cd_chdir(void);
 void			cmd_cd(void);
 void			cmd_env_export(t_lst *lst);
 
@@ -147,7 +163,7 @@ char			*get_env_value(char *str);
 */
 char			*change_value(int idx, int num, int *len, char *value);
 int				get_len(int idx, int len);
-int				dollar_value(int idx, int num);
+int				dollar_value(int idx, int num, char *name);
 void			dollar_change(void);
 
 /*
@@ -185,6 +201,10 @@ void			cmd_unset(void);
 /*
 ** change_path
 */
-void			change_path(void);
+void			is_file(char *path, char *tmp, struct stat st);
+char			*path_malloc(int *path_i, int len);
+char			*eof_path(char *path, int *path_i);
+int				is_path(void);
+void			path_change(int idx, int path_i, char *value);
 
 #endif

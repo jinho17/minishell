@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/06 05:48:52 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/09 00:21:00 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/15 10:07:59 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	no_pipe_version(char **cmds, int idx)
 	dollar_change();
 	remove_quote();
 	remove_empty_str(g_global.cmd_argv, 0);
-	change_path();
+	path_change(0, 0, find_env_value(g_lstenv, "PATH"));
 	exec_cmd();
 	free_str_2p(g_global.cmd_argv);
 }

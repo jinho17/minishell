@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/05 23:53:29 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/09 00:21:31 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/15 10:08:01 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	run_pipe(int **fd, int idx, int pipe_num)
 	dollar_change();
 	remove_quote();
 	remove_empty_str(g_global.cmd_argv, 0);
-	change_path();
+	path_change(0, 0, find_env_value(g_lstenv, "PATH"));
 	pid = fork();
 	if (pid == 0)
 		pipe_child(fd, idx, pipe_num);

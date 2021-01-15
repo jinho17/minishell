@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/06 02:54:45 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/08 21:27:28 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/13 15:37:18 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,21 +65,30 @@ int		get_len(int idx, int len)
 	return (len);
 }
 
-int		dollar_value(int idx, int num)
+int		dollar_value(int idx, int num, char *name)
 {
-	char	*name;
 	char	*value;
 	int		len;
 
-	len = get_len(idx, num + 1);
-	if (len - num == 1)
-		return (len);
-	name = ft_substr(g_global.cmd_argv[idx], num + 1, len - num - 1);
-	if (find_env_value(g_lstenv, name) != NULL)
-		value = ft_strdup(find_env_value(g_lstenv, name));
+	if (g_global.cmd_argv[idx][num + 1] == '?')
+	{
+		value = (char *)malloc(sizeof(char) * 2);
+		value[0] = g_global.bef_quit + '0';
+		value[1] = 0;
+		len = num + 2;
+	}
 	else
-		value = ft_strdup("");
-	free(name);
+	{
+		len = get_len(idx, num + 1);
+		if (len - num == 1)
+			return (len);
+		name = ft_substr(g_global.cmd_argv[idx], num + 1, len - num - 1);
+		if (find_env_value(g_lstenv, name) != NULL)
+			value = ft_strdup(find_env_value(g_lstenv, name));
+		else
+			value = ft_strdup("");
+		free(name);
+	}
 	g_global.cmd_argv[idx] = change_value(idx, num, &len, value);
 	free(value);
 	return (len);
@@ -89,8 +98,10 @@ void	dollar_change(void)
 {
 	int		idx;
 	int		num;
+	char	*name;
 
 	idx = 0;
+	name = 0;
 	while (g_global.cmd_argv[idx])
 	{
 		num = 0;
@@ -101,7 +112,7 @@ void	dollar_change(void)
 			else if (g_global.cmd_argv[idx][num] == g_global.quote)
 				g_global.quote = 0;
 			if (g_global.cmd_argv[idx][num] == '$' && g_global.quote == 0)
-				num = dollar_value(idx, num);
+				num = dollar_value(idx, num, name);
 			else
 				num++;
 		}

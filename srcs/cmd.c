@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 09:22:05 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/08 21:37:38 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/13 18:27:41 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	pwd_print(void)
 	if (g_global.cmd_argv[1] != 0)
 	{
 		ft_putstr_fd("pwd: too many arguments\n", 1);
-		return ;
+		exit(1);
 	}
 	getcwd(cwd, sizeof(cwd));
 	rtn = chdir(cwd);
@@ -37,9 +37,24 @@ void	cmd_exit(void)
 	exit(0);
 }
 
-void	cmd_cd(void)
+void	cd_chdir(void)
 {
 	int		rtn;
+
+	rtn = chdir(g_global.cmd_argv[1]);
+	if (rtn != 0)
+	{
+		ft_putstr_fd("./minishell: cd: No such file or directory: ", 1);
+		ft_putstr_fd(g_global.cmd_argv[1], 1);
+		ft_putchar_fd('\n', 1);
+		g_global.bef_quit = 1;
+	}
+	else
+		g_global.bef_quit = 0;
+}
+
+void	cmd_cd(void)
+{
 	char	*tmp;
 
 	if (g_global.cmd_argv[1] == 0)
@@ -50,14 +65,11 @@ void	cmd_cd(void)
 		free(tmp);
 	}
 	if (g_global.cmd_argv[2] == 0)
+		cd_chdir();
+	else
 	{
-		rtn = chdir(g_global.cmd_argv[1]);
-		if (rtn != 0)
-		{
-			ft_putstr_fd("./minishell: cd: No such file or directory: ", 1);
-			ft_putstr_fd(g_global.cmd_argv[1], 1);
-			ft_putchar_fd('\n', 1);
-		}
+		ft_putstr_fd("cd: too many arguments\n", 1);
+		g_global.bef_quit = 1;
 	}
 }
 

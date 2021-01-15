@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 22:11:03 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/08 04:23:23 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/13 16:54:10 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	export_not_valid(char *str)
 	ft_putstr_fd("export: not valid in this context: ", 1);
 	ft_putstr_fd(str, 1);
 	ft_putstr_fd("\n", 1);
+	g_global.bef_quit = 1;
 }
 
 int		export_isalnum(char *str)
@@ -75,18 +76,19 @@ void	cmd_export(void)
 		if ((rtn = export_isalnum(g_global.cmd_argv[idx])) < 0)
 		{
 			export_not_valid(g_global.cmd_argv[idx]);
-			break ;
+			return ;
 		}
 		else
 		{
 			if ((rtn = str_equal(g_global.cmd_argv[idx])) < 0)
 			{
 				export_not_valid(g_global.cmd_argv[idx]);
-				break ;
+				return ;
 			}
 			else
 				edit_lst(g_global.cmd_argv[idx]);
 		}
 		idx++;
 	}
+	g_global.bef_quit = 0;
 }

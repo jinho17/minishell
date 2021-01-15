@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/05 10:00:35 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/06 06:23:27 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/11 15:59:43 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void	read_cmd(char *buf, int space_check)
 	tmp = ft_strdup(buf);
 	while (1)
 	{
-		read(1, buf, 1);
+		read(0, buf, 1);
 		if (buf[0] == '\n' && g_global.pipe == 0 && g_global.quote == 0)
 			break ;
 		else if (buf[0] == '\n' &&

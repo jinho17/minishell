@@ -6,110 +6,62 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 02:16:27 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/09 00:48:36 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/12 19:42:06 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	remove_redir(int idx, char **cmds)
+void	redir_fork(void)
 {
-	if (cmds[idx + 2] == 0)
-	{
-		while (cmds[idx])
-			cmds[idx++] = 0;
-	}
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == 0)
+		child_ps();
+	else if (pid > 0)
+		wait(0);
 	else
-	{
-		while (cmds[idx + 2])
-		{
-			cmds[idx] = cmds[idx + 2];
-			idx++;
-		}
-	}
-	cmds[idx] = 0;
+		exit(1);
 }
 
-void	redir_input(int idx, char **cmds)
+void	malloc_fd(void)
 {
-	ft_close(g_global.fd_in);
-	if (cmds[idx + 1])
-	{
-		if ((g_global.fd_in = open(cmds[idx + 1], O_RDONLY)) < 0)
-		{
-			ft_putstr_fd("./minishell: No such file or directory: ", 1);
-			ft_putstr_fd(cmds[idx + 1], 1);
-			ft_putchar_fd('\n', 1);
-			return ;
-		}
-	}
+	int	idx;
+
+	idx = 0;
+	while (g_global.cmd_argv[idx])
+		idx++;
+	g_global.fd = (int **)malloc(sizeof(int *) * 2);
+	g_global.fd[0] = (int *)malloc(sizeof(int) * (idx + 1));
+	g_global.fd[1] = (int *)malloc(sizeof(int) * (idx + 1));
+	g_global.fd_in = 0;
+	g_global.fd_out = 0;
 }
 
-void	redir_output(int idx, char **cmds, int double_redir)
+void	redirect(void)
 {
-	ft_close(g_global.fd_out);
-	if (cmds[idx + 1])
-	{
-		if (double_redir == 0)
-		{
-			if ((g_global.fd_out = open(cmds[idx + 1],
-					O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
-				return ;
-		}
-		else
-		{
-			if ((g_global.fd_out = open(cmds[idx + 1],
-					O_CREAT | O_WRONLY | O_APPEND, 0644)) < 0)
-				return ;
-		}
-	}
-}
-
-int		is_inout(int *idx, char **cmds)
-{
-	while (cmds[*idx])
-	{
-		if (ft_strncmp(cmds[*idx], "<", 2) == 0)
-			return (1);
-		else if (ft_strncmp(cmds[*idx], ">", 2) == 0)
-			return (2);
-		else if (ft_strncmp(cmds[*idx], ">>", 3) == 0)
-			return (3);
-		*idx += 1;
-	}
-	return (-1);
-}
-
-char	**redir_cmds_malloc(void)
-{
-	char	**cmds;
 	int		idx;
-	int		rtn;
-	int		redir_num;
+	int		in_idx;
 
-	redir_num = 0;
-	rtn = is_inout(&redir_num, g_global.cmd_argv);
-	if (rtn != -1)
+	malloc_fd();
+	edit_cmd_argv();
+	idx = 0;
+	while (1)
 	{
-		cmds = cmd_malloc();
-		idx = 0;
-		while (g_global.cmd_argv[idx])
+		if (g_global.fd_out > 0)
+			dup2(g_global.fd[1][idx], STDOUT_FILENO);
+		in_idx = 0;
+		while (in_idx < g_global.fd_in)
 		{
-			cmds[idx] = ft_strdup(g_global.cmd_argv[idx]);
-			idx++;
+			dup2(g_global.fd[0][in_idx], STDIN_FILENO);
+			redir_fork();
+			in_idx++;
 		}
-		cmds[idx] = 0;
-		free_str_2p(g_global.cmd_argv);
-		g_global.cmd_argv = cmd_malloc();
-		idx = 0;
-		while (idx < redir_num)
-		{
-			g_global.cmd_argv[idx] = ft_strdup(cmds[idx]);
-			idx++;
-		}
-		g_global.cmd_argv[idx] = 0;
+		if (g_global.fd_in == 0)
+			redir_fork();
+		idx++;
+		if (g_global.fd_out == 0 || idx >= g_global.fd_out)
+			break ;
 	}
-	else
-		return (0);
-	return(cmds);
 }

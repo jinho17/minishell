@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/27 22:22:25 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/08 04:28:56 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/12 15:26:47 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	unset_invalid(void)
 	ft_putstr_fd("unset: ", 1);
 	ft_putstr_fd(g_global.cmd_argv[1], 1);
 	ft_putstr_fd(": invalid parameter name\n", 1);
+	g_global.bef_quit = 1;
 }
 
 int		unset_isalnum(char *str)
@@ -68,7 +69,7 @@ void	run_unset(void)
 		if ((rtn = unset_isalnum(g_global.cmd_argv[idx])) < 0)
 		{
 			unset_invalid();
-			break ;
+			return ;
 		}
 		else
 		{
@@ -81,12 +82,16 @@ void	run_unset(void)
 		}
 		idx++;
 	}
+	g_global.bef_quit = 0;
 }
 
 void	cmd_unset(void)
 {
 	if (g_global.cmd_argv[1] == 0)
+	{
 		ft_putstr_fd("unset: not enough arguments\n", 1);
+		g_global.bef_quit = 1;
+	}
 	else
 		run_unset();
 }
