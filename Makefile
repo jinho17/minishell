@@ -34,6 +34,7 @@ clean:
 fclean: clean
 	rm -rf ./libft/libft.a
 	rm -rf $(NAME)
+	rm -rf $(NAME).dSYM
 
 re: fclean all
 

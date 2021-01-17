@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 00:17:42 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/15 10:14:25 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/16 17:22:46 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,50 +95,3 @@ void	path_change(int idx, int path_i, char *value)
 		}
 	}
 }
-
-/*
-void	path_change(void)
-{
-	char	*value;
-	int		idx;
-	char	*path;
-	int		path_i;
-	char	*tmp;
-	struct stat	st;
-
-	if (is_path() == 0)
-	{
-		value = find_env_value(g_lstenv, "PATH");
-		idx = 0;
-		path = (char *)malloc(sizeof(char) * (ft_strlen(value) + 1));
-		path_i = 0;
-		while (value[idx])
-		{
-			if (value[idx] == ':')
-			{
-				path[path_i++] = '/';
-				path[path_i] = 0;
-				tmp = ft_strjoin(path, g_global.cmd_argv[0]);
-				free(path);
-				stat(tmp, &st);
-				if (S_ISREG(st.st_mode) != 0)
-				{
-					free(g_global.cmd_argv[0]);
-					g_global.cmd_argv[0] = ft_strdup(tmp);
-					free(tmp);
-					break ;
-				}
-				else
-				{
-					path_i = 0;
-					path = (char *)malloc(sizeof(char) * (ft_strlen(value) + 1));
-				}
-				free(tmp);
-			}
-			else
-				path[path_i++] = value[idx];
-			idx++;
-		}
-	}
-}
-*/

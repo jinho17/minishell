@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/23 05:23:15 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/15 10:18:56 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/17 22:19:23 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ t_global		g_global;
 */
 int				get_cmd(void);
 void			shell_prompt(void);
+void			my_int(int signo);
+void			do_nothing(int nb);
 
 /*
 ** read_cmd.c
