@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/06 05:48:52 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/15 10:07:59 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:45:25 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,14 @@ void	remove_empty_str(char **cmds, int idx)
 			num = idx;
 			while (cmds[num])
 			{
+				free(cmds[num]);
 				if (cmds[num + 1])
-				{
-					free(cmds[num]);
 					cmds[num] = ft_strdup(cmds[num + 1]);
-				}
 				else
 					cmds[num] = 0;
 				num++;
 			}
+			free(cmds[num]);
 			cmds[num] = 0;
 		}
 		else

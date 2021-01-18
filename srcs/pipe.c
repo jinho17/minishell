@@ -6,20 +6,11 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/05 23:53:29 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/15 10:08:01 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 14:05:23 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	dup_close(int *fd, int inout)
-{
-	int		rtn;
-
-	rtn = dup2(fd[inout], inout);
-	ft_close(fd[1]);
-	ft_close(fd[0]);
-}
 
 void	pipe_parent(int **fd, int idx, int pipe_num)
 {
@@ -33,9 +24,17 @@ void	pipe_parent(int **fd, int idx, int pipe_num)
 void	pipe_child(int **fd, int idx, int pipe_num)
 {
 	if (idx != 0)
-		dup_close(fd[idx - 1], 0);
+	{
+		dup2(fd[idx - 1][0], 0);
+		ft_close(fd[idx - 1][1]);
+		ft_close(fd[idx - 1][0]);
+	}
 	if (idx != pipe_num - 1)
-		dup_close(fd[idx], 1);
+	{
+		dup2(fd[idx][1], 1);
+		ft_close(fd[idx][1]);
+		ft_close(fd[idx][0]);
+	}
 	exec_cmd();
 	exit(0);
 }
@@ -57,6 +56,22 @@ void	run_pipe(int **fd, int idx, int pipe_num)
 		exit(1);
 }
 
+int		**malloc_pipefd(int pipe_num)
+{
+	int		**fd;
+	int		idx;
+
+	fd = (int **)malloc(sizeof(int *) * (pipe_num + 1));
+	idx = 0;
+	while (idx < pipe_num - 1)
+	{
+		fd[idx] = (int *)malloc(sizeof(int) * 2);
+		pipe(fd[idx++]);
+	}
+	fd[idx] = 0;
+	return (fd);
+}
+
 void	exec_pipe(char **pipe_cmd)
 {
 	int		pipe_num;
@@ -66,14 +81,7 @@ void	exec_pipe(char **pipe_cmd)
 	pipe_num = 0;
 	while (pipe_cmd[pipe_num])
 		pipe_num++;
-	fd = (int **)malloc(sizeof(int *) * (pipe_num + 1));
-	idx = 0;
-	while (idx < pipe_num - 1)
-	{
-		fd[idx] = (int *)malloc(sizeof(int) * 2);
-		pipe(fd[idx++]);
-	}
-	fd[idx] = 0;
+	fd = malloc_pipefd(pipe_num);
 	idx = 0;
 	while (pipe_cmd[idx])
 	{
@@ -83,4 +91,8 @@ void	exec_pipe(char **pipe_cmd)
 	}
 	while (wait(0) > 0)
 		;
+	idx = 0;
+	while (idx < pipe_num - 1)
+		free(fd[idx++]);
+	free(fd);
 }

@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/05 11:39:20 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/13 16:54:51 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:42:20 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,10 @@ char	**cmd_malloc(void)
 			space++;
 		idx++;
 	}
-	rtn = (char **)malloc(sizeof(char *) * (space * space + 5));
+	g_global.malloc_num = space * space + 5;
+	rtn = (char **)malloc(sizeof(char *) * g_global.malloc_num);
 	idx = 0;
-	while (idx < space * space + 5)
+	while (idx < g_global.malloc_num)
 	{
 		rtn[idx] = (char *)malloc(
 			sizeof(char) * ((int)ft_strlen(g_global.cmd) + 1));
@@ -82,7 +83,6 @@ void	get_cmd_argv(void)
 	cmds = split_cmd(0, 0, g_global.cmd, ';');
 	remove_empty_str(cmds, 0);
 	remove_space(cmds);
-	g_global.cmd_argv = cmd_malloc();
 	idx = 0;
 	while (cmds[idx])
 	{
@@ -93,7 +93,10 @@ void	get_cmd_argv(void)
 		{
 			no_pipe_version(cmds, idx);
 			if (g_global.export_err == -1)
+			{
+				free_str_2p(cmds);
 				return ;
+			}
 		}
 		idx++;
 	}

@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 09:22:05 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/13 18:27:41 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:25:47 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,10 @@ void	cmd_cd(void)
 
 	if (g_global.cmd_argv[1] == 0)
 	{
-		free_str_2p(g_global.cmd_argv);
-		tmp = ft_strjoin("cd /Users/", find_env_value(g_lstenv, "USER"));
-		g_global.cmd_argv = ft_split(tmp, ' ');
+		tmp = ft_strjoin("/Users/", find_env_value(g_lstenv, "USER"));
+		g_global.cmd_argv[1] = ft_strdup(tmp);
+		free(g_global.cmd_argv[2]);
+		g_global.cmd_argv[2] = 0;
 		free(tmp);
 	}
 	if (g_global.cmd_argv[2] == 0)

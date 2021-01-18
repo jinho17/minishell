@@ -6,11 +6,18 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 17:51:42 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/12 19:19:43 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:50:58 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	end_of_cmds(int num1, int num2, char **cmds)
+{
+	cmds[num1++][num2] = 0;
+	free(cmds[num1]);
+	cmds[num1] = 0;
+}
 
 void	new_str(char **cmds, int *num1, int *num2, int trim)
 {
@@ -30,9 +37,9 @@ char	**split_cmd(int num1, int num2, char *str, char trim)
 	int		idx;
 
 	g_global.redir = 0;
-	idx = -1;
+	idx = 0;
 	cmds = cmd_malloc();
-	while (str[++idx])
+	while (str[idx])
 	{
 		if ((str[idx] == '\'' || str[idx] == '\"') && g_global.quote == 0)
 			g_global.quote = str[idx];
@@ -47,8 +54,8 @@ char	**split_cmd(int num1, int num2, char *str, char trim)
 			new_str(cmds, &num1, &num2, trim);
 		else
 			cmds[num1][num2++] = str[idx];
+		idx++;
 	}
-	cmds[num1++][num2] = 0;
-	cmds[num1] = 0;
+	end_of_cmds(num1, num2, cmds);
 	return (cmds);
 }

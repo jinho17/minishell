@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/23 05:23:15 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/17 22:19:23 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 14:05:45 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef struct	s_global
 	int			fd_in;
 	int			fd_out;
 	int			redir;
+	int			malloc_num;
 }				t_global;
 t_global		g_global;
 
@@ -93,10 +94,10 @@ void			pipe_version(char **cmds, int idx);
 /*
 **	pipe.c
 */
-void			dup_close(int *fd, int inout);
 void			pipe_parent(int **fd, int idx, int pipe_num);
 void			pipe_child(int **fd, int idx, int pipe_num);
 void			run_pipe(int **fd, int idx, int pipe_num);
+int				**malloc_pipefd(int pipe_num);
 void			exec_pipe(char **pipe_cmd);
 
 /*

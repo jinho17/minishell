@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/04 08:29:07 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/14 01:03:31 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 02:14:21 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	cmd_bin(void)
 		ft_putstr_fd("./minishell: ", 1);
 		ft_putstr_fd(g_global.cmd_argv[0], 1);
 		ft_putstr_fd(": command not found\n", 1);
+		g_global.malloc_num = 0;
 		free_str_2p(env_arr);
 		exit(1);
 	}

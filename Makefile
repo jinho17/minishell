@@ -5,7 +5,7 @@ LIB = -L./libft -lft
 
 SRC_DIR = ./srcs/
 HEADER_DIR = -I./includes
-CFLAGS = -fsanitize=address -g -Wall -Wextra -Werror $(HEADER_DIR)
+CFLAGS = -Wall -Wextra -Werror $(HEADER_DIR)
 
 SOURCE = minishell.c init_lst.c lstadd_sort.c cmd.c \
 		get_env.c cmd_export.c edit_lst.c \
@@ -34,7 +34,6 @@ clean:
 fclean: clean
 	rm -rf ./libft/libft.a
 	rm -rf $(NAME)
-	rm -rf $(NAME).dSYM
 
 re: fclean all
 

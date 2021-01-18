@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 00:17:42 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/16 17:22:46 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:28:47 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,12 @@ void	path_change(int idx, int path_i, char *value)
 				stat(tmp, &st);
 				is_file(path, tmp, st);
 				if (S_ISREG(st.st_mode) != 0)
-					break ;
+					return ;
 			}
 			else
 				path[path_i++] = value[idx];
 			idx++;
 		}
+		free(path);
 	}
 }

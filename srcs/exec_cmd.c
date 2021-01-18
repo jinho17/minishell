@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/04 06:54:02 by jinkim            #+#    #+#             */
-/*   Updated: 2021/01/15 09:30:47 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:42:25 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ void	free_str_2p(char **str)
 	int		idx;
 
 	idx = 0;
-	while (str[idx] != NULL)
+	while ((str[idx] != NULL && g_global.malloc_num == 0) ||
+		(idx < g_global.malloc_num && g_global.malloc_num != 0))
 	{
 		free(str[idx]);
 		idx++;

@@ -6,7 +6,7 @@
 /*   By: jinkim <jinkim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 23:35:13 by jinkim            #+#    #+#             */
-/*   Updated: 2020/12/27 00:53:48 by jinkim           ###   ########.fr       */
+/*   Updated: 2021/01/18 13:06:04 by jinkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,16 @@ void	edit_lst(char *str)
 
 	name = get_env_name(str);
 	value = get_env_value(str);
-	add_lstexport(name, value);
-	name = get_env_name(str);
-	value = get_env_value(str);
-	add_lstenv(name, value);
+	if (find_env_value(g_lstenv, name) == NULL)
+	{
+		add_lstexport(name, value);
+		name = get_env_name(str);
+		value = get_env_value(str);
+		add_lstenv(name, value);
+	}
+	else
+	{
+		free(name);
+		free(value);
+	}
 }
